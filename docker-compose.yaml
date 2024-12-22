@@ -1,0 +1,26 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./src:/app/src  # 로컬 디렉토리와 컨테이너 디렉토리 연결
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/coupang
+      - SPRING_DATASOURCE_USERNAME=yujeonmu
+      - SPRING_DATASOURCE_PASSWORD=postgres
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: yujeonmu
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: coupang
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d  # 로컬의 init 폴더를 컨테이너의 /docker-entrypoint-initdb.d로 매핑
+      - ./backup.dump:/docker-entrypoint-initdb.d/backup.dump  # 덤프 파일을 /docker-entrypoint-initdb.d에 복사
+    restart: always
